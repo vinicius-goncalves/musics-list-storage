@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+        *{margin:0;padding:0;box-sizing:border-box}
+        body {
+            background-color: #fff34dea;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            margin: 0 10px;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 500px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: white;
+            padding: 5px;
+            box-shadow: 15px 15px #77733db0;
+            border-radius: 10px;
+        }
+
+        [data-js="form"] {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+            max-width: 350px;
+
+        }
+
+        input { 
+            margin: 5px auto;
+        }
+
+        input[type="button"],
+        input[type="submit"] {
+            cursor: pointer;
+        }
+
+        #music__name, #search__music {
+            border: 2px solid #faec2a;
+            border-radius: 10px;
+            text-align: center;
+            padding: 5px;
+            font-size: 16px;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        #music__name:focus, #search__music {
+            outline: none;
+        }
+
+        input[type="submit"] {
+            background-color: #353535;
+            border: none;
+            padding: 5px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 7px;
+            width: 100%;
+        }
+
+        ul {
+            margin-top: 50px;
+            background-color: white;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 5px 5px #35353575;
+            border-radius: 5px;
+            overflow: hidden auto;
+            transition: max-height 1s, padding 1s;
+            max-height: 0;
+            list-style-type: none;
+
+        }
+
+        ul.active {
+            padding: 15px;
+            max-height: 250px;
+        }
+
+        li {
+            counter-increment: item;
+        }
+
+        li::before {
+            content: counter(item) '\00A0'
+        }
+
+
+        .toggleHeight {
+            background-color: #353535;
+            border: none;
+            padding: 5px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 7px;
+            width: 100%;
+            max-width: 350px;
+            margin-bottom: 10px;
+        }
+
+        .musics-not-found {
+            text-align: center;
+            padding: 25px;
+            color: #353535;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+    <input type="button" class="toggleHeight" value="See musics added">
+
+    <div class="wrapper">
+        <h2>List</h2>
+        <form data-js="form" autocomplete="off">
+            <input type="search" name="music__name" id= "music__name" placeholder="Insert a new music">
+            <input type="text" name="search__music" id= "search__music" placeholder="What are you looking for?">
+            <input type="submit" value="Add music">
+        </form>
+        
+
+    </div>
+    <ul class="ul-wrapper">
+        <p class="musics-not-found">Nothing yet</p>
+    </ul>
+    <script>
+        const formWrapper = document.querySelector('[data-js="form"]')
+        const ulWrapper = document.querySelector('.ul-wrapper')
+        const toggleHeight = document.querySelector('.toggleHeight') 
+
+        toggleHeight.addEventListener('click', () => ulWrapper.classList.toggle('active'))
+
+        const generateId = (length) => {
+            let result = ""
+            const characters = "ABC0123"
+            const charactersLength = characters.length
+            for(let i = 0; i < length; i++) {
+                result += characters.charAt(Math.random() * charactersLength).toLowerCase()
+            }
+            return result
+        }
+
+        const createElement = (element, value, appendWhere) => {
+
+            const idGenerated = generateId(6)
+
+            const newElement = document.createElement(element)
+            newElement.textContent = value
+            newElement.dataset.li = idGenerated
+            appendWhere.appendChild(newElement)
+
+            newElement.innerHTML += ` <i href="#" data-delete="${idGenerated}">Delete</i>`
+
+        }
+
+        formWrapper.addEventListener('submit', event => {
+            event.preventDefault()
+
+            if(ulWrapper.firstElementChild.classList.contains('musics-not-found')) {
+                ulWrapper.firstElementChild.remove()
+            }
+            
+            createElement('li', event.target.music__name.value, ulWrapper)
+        })
+
+    </script>
+</body>
+</html>
