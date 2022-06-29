@@ -38,8 +38,28 @@
             flex-direction: column;
             justify-content: center;
             width: 100%;
-            max-width: 350px;
+            max-width: 450px;
 
+        }
+
+        .musics-details-wrapper, 
+        .search-wrapper {
+            margin-top: 10px;
+        }
+
+        .musics-details-wrapper {
+            width: 100%;
+            display: flex;
+        }
+
+        .musics-details-wrapper input {
+            margin: 3px;
+        }
+
+        .search-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         input { 
@@ -51,7 +71,7 @@
             cursor: pointer;
         }
 
-        #music__name, #search__music {
+        .input-style {
             border: 2px solid #faec2a;
             border-radius: 10px;
             text-align: center;
@@ -61,11 +81,11 @@
             max-width: 350px;
         }
 
-        #music__name:focus, #search__music {
+        .input-style:focus {
             outline: none;
         }
 
-        input[type="submit"] {
+        .button-style {
             background-color: #353535;
             border: none;
             padding: 5px;
@@ -124,62 +144,163 @@
             font-weight: bold;
         }
 
+        :required::before {
+            content: "*";
+            background-color: red;
+            width: 100%;
+            height: 100%;
+        }
+
     </style>
 </head>
 <body>
     <input type="button" class="toggleHeight" value="See musics added">
 
     <div class="wrapper">
+
         <h2>List</h2>
         <form data-js="form" autocomplete="off">
-            <input type="search" name="music__name" id= "music__name" placeholder="Insert a new music">
-            <input type="text" name="search__music" id= "search__music" placeholder="What are you looking for?">
-            <input type="submit" value="Add music">
-        </form>
-        
+            <h4>Music's details</h4>
+            <div class="musics-details-wrapper">
+                <input type="text" name="music__name" id= "music__name" placeholder="Music name" value="Set Fire to the Rain" class="input-style" required>
+                <input type="text" name="artists_name" id= "artist__name" placeholder="Artist(s) name" value="Adele" class="input-style" required>
+                <input type="text" name="release_date" id= "release__date" placeholder="Release date" value="2011" class="input-style">
+            </div>
+            <input type="submit" value="Add music" class="button-style" id="add">
+            <input type="button" value="Load musics" class="button-style" id="load__musics">
 
+            <div class="search-wrapper">
+                <h4>Search</h4>
+                <input type="search" name="search__music" id= "search__music" placeholder="What are you looking for?" class="input-style">
+            </div>
+
+        </form>
     </div>
+    
     <ul class="ul-wrapper">
         <p class="musics-not-found">Nothing yet</p>
     </ul>
+
+    <script src="https://kit.fontawesome.com/866e7f0be4.js" crossorigin="anonymous"></script>
+
     <script>
+
+        const defaultChars = 
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+
+        const wrapper = document.querySelector('.wrapper')
         const formWrapper = document.querySelector('[data-js="form"]')
         const ulWrapper = document.querySelector('.ul-wrapper')
         const toggleHeight = document.querySelector('.toggleHeight') 
 
+        const musicName = document.querySelector('#music__name')
+        const artistName = document.querySelector('#artist__name')
+        const releaseDate = document.querySelector('#release__date')
+
+        const loadMusicsButton = document.querySelector('#load__musics')
+        
+        const musicsId = []
+        let savedMusics = []
+        
+        window.onload = () => ulWrapper.classList.toggle('active')
+        window.addEventListener('load', () => {
+            const storageSavedMusics = localStorage.getItem('savedMusics') === null ? [] : localStorage.getItem('savedMusics')
+            savedMusics = JSON.parse(storageSavedMusics)
+            search__music.focus()
+        })
+
         toggleHeight.addEventListener('click', () => ulWrapper.classList.toggle('active'))
 
-        const generateId = (length) => {
+        const generateId = (length, chars = defaultChars) => {
             let result = ""
-            const characters = "ABC0123"
+            const characters = chars
             const charactersLength = characters.length
             for(let i = 0; i < length; i++) {
-                result += characters.charAt(Math.random() * charactersLength).toLowerCase()
+                result += characters.charAt(Math.random() * charactersLength)
             }
             return result
         }
 
-        const createElement = (element, value, appendWhere) => {
-
-            const idGenerated = generateId(6)
+        const createElement = (element, value, appendWhere, idGenerated) => {
 
             const newElement = document.createElement(element)
             newElement.textContent = value
             newElement.dataset.li = idGenerated
             appendWhere.appendChild(newElement)
 
-            newElement.innerHTML += ` <i href="#" data-delete="${idGenerated}">Delete</i>`
-
+            newElement.innerHTML += ` <i class="fas fa-trash" data-delete="${idGenerated}" style="cursor: pointer;"></i>`
+            
         }
 
         formWrapper.addEventListener('submit', event => {
+
             event.preventDefault()
 
             if(ulWrapper.firstElementChild.classList.contains('musics-not-found')) {
                 ulWrapper.firstElementChild.remove()
             }
-            
-            createElement('li', event.target.music__name.value, ulWrapper)
+
+            const idGenerated = generateId(16)
+            const template = musicName.value + ' - ' + artistName.value + ' - ' + releaseDate.value
+
+            const music = {
+                id: idGenerated,
+                name: musicName.value,
+                artist: artistName.value,
+                'release-date': releaseDate.value 
+
+            }
+
+            savedMusics.push(music)
+
+            console.log(savedMusics)
+
+            localStorage.setItem('savedMusics', JSON.stringify(savedMusics))
+
+            createElement('li', template, ulWrapper, idGenerated)
+        })
+
+        ulWrapper.addEventListener('click', event => {
+            const targetClicked = event.target
+
+            if(targetClicked.dataset.delete) {
+
+                savedMusics.filter((music, index) => {
+                    if(music.id === targetClicked.dataset.delete) {
+                        return savedMusics.splice(index, 1)
+                    }
+                })
+
+                console.log(JSON.stringify(savedMusics))
+
+                localStorage.setItem('savedMusics', JSON.stringify(savedMusics))
+
+                if(ulWrapper.firstElementChild === null) {
+                    const newElement = document.createElement('p')
+                    newElement.textContent = "Nothing yet"
+                    newElement.classList.add('musics-not-found')
+                    ulWrapper.appendChild(newElement)
+                }
+                
+                if(!ulWrapper.firstElementChild.classList.contains('musics-not-found')) {
+
+                }
+            }
+        })
+
+        loadMusicsButton.addEventListener('click', () => {
+            ulWrapper.innerHTML = ""
+
+            const musicsFromStorage = localStorage.getItem('musicsId')
+            ulWrapper.classList?.add('active')
+
+            savedMusics.forEach(music => {
+                const { id, name, artist, 'release-date': releaseDate } = music
+
+                const template = `${name} - ${artist} - ${releaseDate}`
+                createElement('li', template, ulWrapper, id)
+
+            })
         })
 
     </script>
