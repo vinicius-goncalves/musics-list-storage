@@ -1,0 +1,143 @@
+*{margin:0;padding:0;box-sizing:border-box}
+        body {
+            background-color: #fff34dea;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            margin: 0 10px;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 500px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: white;
+            padding: 5px;
+            box-shadow: 15px 15px #77733db0;
+            border-radius: 10px;
+        }
+
+        [data-js="form"] {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+            max-width: 450px;
+
+        }
+
+        .musics-details-wrapper, 
+        .search-wrapper {
+            margin-top: 10px;
+        }
+
+        .musics-details-wrapper {
+            width: 100%;
+            display: flex;
+        }
+
+        .musics-details-wrapper input {
+            margin: 3px;
+        }
+
+        .search-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        input { 
+            margin: 5px auto;
+        }
+
+        input[type="button"],
+        input[type="submit"] {
+            cursor: pointer;
+        }
+
+        .input-style {
+            border: 2px solid #faec2a;
+            border-radius: 10px;
+            text-align: center;
+            padding: 5px;
+            font-size: 16px;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .input-style:focus {
+            outline: none;
+        }
+
+        .button-style {
+            background-color: #353535;
+            border: none;
+            padding: 5px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 7px;
+            width: 100%;
+        }
+
+        ul {
+            margin-top: 50px;
+            background-color: white;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 5px 5px #35353575;
+            border-radius: 5px;
+            overflow: hidden auto;
+            transition: max-height 1s, padding 1s;
+            max-height: 0;
+            list-style-type: none;
+
+        }
+
+        ul.active {
+            padding: 15px;
+            max-height: 250px;
+        }
+
+        li {
+            counter-increment: item;
+        }
+
+        li::before {
+            content: counter(item) '\00A0'
+        }
+
+
+        .toggleHeight {
+            background-color: #353535;
+            border: none;
+            padding: 5px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 7px;
+            width: 100%;
+            max-width: 350px;
+            margin-bottom: 10px;
+        }
+
+        .musics-not-found {
+            text-align: center;
+            padding: 25px;
+            color: #353535;
+            font-weight: bold;
+        }
+
+        :required::before {
+            content: "*";
+            background-color: red;
+            width: 100%;
+            height: 100%;
+        }
