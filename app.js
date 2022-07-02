@@ -10,6 +10,25 @@ const musicName = document.querySelector('#music__name')
 const artistName = document.querySelector('#artist__name')
 const releaseDate = document.querySelector('#release__date')
 
+const searchMusicButton = document.querySelector('#search__music__button')
+
+const dropdownOptionsWrapper = document.querySelector('.options-dropdrown-button')
+
+const dropdrownButtonsChildren = [...document.querySelector('.options-dropdrown-buttons').children]
+dropdrownButtonsChildren.forEach(item => {
+    item.addEventListener('click', () => {
+        document.querySelector('.options-dropdrown-buttons').classList.remove('active')
+    })
+})
+
+dropdownOptionsWrapper.addEventListener('click', () => {
+    document.querySelector('.options-dropdrown-buttons').classList.toggle('active')
+})
+
+searchMusicButton.addEventListener('click', () => {
+    document.querySelector('.search-wrapper').classList.toggle('active-search-wrapper')
+})
+
 const loadMusicsButton = document.querySelector('#load__musics')
 
 const musicsId = []
@@ -116,12 +135,15 @@ ulWrapper.addEventListener('click', event => {
         const artistNameIntoDOM = liInsertIntoDOM.textContent.match(/[^\-]+/gi)[1]
         const releaseDateIntoDOM = liInsertIntoDOM.textContent.match(/[^\-]+/gi)[2]
 
+        const tempLiArtist = document.querySelector(`[data-temp-li-artist="${event.target.dataset.edit}"]`)
+        const tempLiName = document.querySelector(`[data-temp-li-name="${event.target.dataset.edit}"]`)
+        const tempLiReleaseDate = document.querySelector(`[data-temp-li-date="${event.target.dataset.edit}"]`)
+
         const div = document.createElement('div')
         div.classList.add('temp-edit-details')
         div.dataset.tempDiv = event.target.dataset.edit
 
         const musicName = document.createElement('input')
-
         musicName.setAttribute('type', 'text')
         console.log()
         musicName.placeholder = musicNameIntoDOM
@@ -140,20 +162,18 @@ ulWrapper.addEventListener('click', event => {
 
         div.append(musicName, artistName, releaseDate)
 
-        if(!document.querySelector(`[data-temp-li-artist="${event.target.dataset.edit}"]`) 
-        && !document.querySelector(`[data-temp-li-name="${event.target.dataset.edit}"]`)
-        && !document.querySelector(`[data-temp-li-date="${event.target.dataset.edit}"]`)) {
+        const dataTemps = [tempLiArtist, tempLiName, tempLiReleaseDate]
+        const itemsAreEmpty = dataTemps.every(item => !item) 
 
+        if(itemsAreEmpty) {
             document.querySelector(`[data-edit="${event.target.dataset.edit}"]`).classList.replace('fa-pen', 'fa-check')
             
             document.querySelector(`[data-edit="${event.target.dataset.edit}"]`).setAttribute('data-temp-edit', event.target.dataset.edit)
-
+    
             liInsertIntoDOM.insertAdjacentElement('afterend', div)
-        
             return
-        }
-
-        
+            
+        }        
     }
 
     if(event.target.dataset.tempEdit) {

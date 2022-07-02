@@ -8,20 +8,29 @@
     <title>Document</title>
 </head>
 <body>
-    <input type="button" class="toggleHeight" value="See musics added">
-
     <div class="wrapper">
 
         <h2>List</h2>
-        <form data-js="form" autocomplete="off">
-            <h4>Music's details</h4>
+        <form data-js="form" autocomplete="off" class="form-wrapper">
+            <h4>Which music would you put today?</h4>
             <div class="musics-details-wrapper">
                 <input type="text" name="music__name" id= "music__name" placeholder="Music name" value="Set Fire to the Rain" class="input-style" required>
                 <input type="text" name="artists_name" id= "artist__name" placeholder="Artist(s) name" value="Adele" class="input-style" required>
                 <input type="text" name="release_date" id= "release__date" placeholder="Release date" value="2011" class="input-style">
             </div>
-            <input type="submit" value="Add music" class="button-style" id="add">
-            <input type="button" value="Load musics" class="button-style" id="load__musics">
+
+            <div class="inputs-wrapper">
+                <input type="submit" value="Add music" class="button-style" id="add">
+                <div class="options-dropdrown">
+                    <input type="button" class="button-style options-dropdrown-button" value="Show more options">
+                    <div class="options-dropdrown-buttons">
+                        <input type="button" value="Load musics" class="button-style" id="load__musics">
+                        <input type="button" class="toggleHeight button-style" value="See musics added">
+                        <input type="button" class="toggleHeight button-style" value="Search" id="search__music__button">
+                    </div>
+                </div>
+            </div>
+            
 
             <div class="search-wrapper">
                 <h4>Search</h4>
