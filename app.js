@@ -16,6 +16,7 @@ const musicsId = []
 let savedMusics = []
 
 const showItemsOnScreen = () => {
+    console.log(savedMusics)
     savedMusics.forEach(music => {
         const { id, name, artist, 'release-date': releaseDate } = music
 
@@ -83,8 +84,6 @@ formWrapper.addEventListener('submit', event => {
     createElement('li', template, ulWrapper, idGenerated)
 })
 
-
-
 ulWrapper.addEventListener('click', event => {
 
     const targetClicked = event.target
@@ -93,15 +92,14 @@ ulWrapper.addEventListener('click', event => {
 
         ulWrapper.innerHTML = ''
 
-        // savedMusics.filter((music, index) => {
-        //     if(music.id === targetClicked.dataset.delete) {
-        //         return savedMusics.splice(index, 1)
-        //     }
-        // })
-
-        showItemsOnScreen()
+        savedMusics.filter(item => {
+            if(item.id === event.target.dataset.delete) {
+                return savedMusics.splice(item.id, 1)
+            }
+        })
 
         localStorage.setItem('savedMusics', JSON.stringify(savedMusics))
+        showItemsOnScreen()
 
         if(ulWrapper.firstElementChild === null) {
             const newElement = document.createElement('p')
@@ -113,20 +111,101 @@ ulWrapper.addEventListener('click', event => {
 
     if(event.target.dataset.edit) {
 
-        // const savedMusicsFromStorage = JSON.parse(localStorage.getItem('savedMusics'))
-        
         const liInsertIntoDOM = document.querySelector(`[data-li="${event.target.dataset.edit}"]`)
-        const newElement = document.createElement('input')
+        const musicNameIntoDOM = liInsertIntoDOM.textContent.match(/[^\-]+/gi)[0]
+        const artistNameIntoDOM = liInsertIntoDOM.textContent.match(/[^\-]+/gi)[1]
+        const releaseDateIntoDOM = liInsertIntoDOM.textContent.match(/[^\-]+/gi)[2]
 
-        newElement.setAttribute('type', 'text')
-        newElement.placeholder = 'Input a new name for the music'
-        newElement.classList.add('input-style')
-        newElement.dataset.tempLi = event.target.dataset.edit
+        const div = document.createElement('div')
+        div.classList.add('temp-edit-details')
+        div.dataset.tempDiv = event.target.dataset.edit
+
+        const musicName = document.createElement('input')
+
+        musicName.setAttribute('type', 'text')
+        console.log()
+        musicName.placeholder = musicNameIntoDOM
+        musicName.classList.add('input-style', 'input-temp-edit-details')
+        musicName.dataset.tempLiName = event.target.dataset.edit
+
+        const artistName = document.createElement('input') 
+        artistName.placeholder = artistNameIntoDOM
+        artistName.dataset.tempLiArtist = event.target.dataset.edit
+        artistName.classList.add('input-style', 'input-temp-edit-details')
+
+        const releaseDate = document.createElement('input')
+        releaseDate.placeholder = releaseDateIntoDOM
+        releaseDate.dataset.tempLiDate = event.target.dataset.edit
+        releaseDate.classList.add('input-style', 'input-temp-edit-details')
+
+        div.append(musicName, artistName, releaseDate)
+
+        if(!document.querySelector(`[data-temp-li-artist="${event.target.dataset.edit}"]`) 
+        && !document.querySelector(`[data-temp-li-name="${event.target.dataset.edit}"]`)
+        && !document.querySelector(`[data-temp-li-date="${event.target.dataset.edit}"]`)) {
+
+            document.querySelector(`[data-edit="${event.target.dataset.edit}"]`).classList.replace('fa-pen', 'fa-check')
+            
+            document.querySelector(`[data-edit="${event.target.dataset.edit}"]`).setAttribute('data-temp-edit', event.target.dataset.edit)
+
+            liInsertIntoDOM.insertAdjacentElement('afterend', div)
         
-        if(!document.querySelector(`[data-temp-li="${event.target.dataset.edit}"]`)) {
-            document.querySelector(`[data-edit=${event.target.dataset.edit}]`).classList.replace('fa-pen', 'fa-check')
-            liInsertIntoDOM.insertAdjacentElement('afterend', newElement)
             return
+        }
+
+        
+    }
+
+    if(event.target.dataset.tempEdit) {
+
+        document.querySelector(`[data-temp-div="${event.target.dataset.edit}"]`).classList.add('temp-edit-details-active')
+
+        const musicName = document.querySelector(`[data-temp-li-name="${event.target.dataset.edit}"]`)
+        const artistName  = document.querySelector(`[data-temp-li-artist="${event.target.dataset.edit}"]`)
+        const releaseDate = document.querySelector(`[data-temp-li-date="${event.target.dataset.edit}"]`)
+
+        const arrayWithDetails = [musicName, artistName, releaseDate]
+
+        const ItemsCantBeNotEmpty = arrayWithDetails.map(item => {
+            if(item.value === '') {
+                item.classList.add('incorrect')
+            }else {
+                item.classList.remove('incorrect')
+            }
+            return item
+        })
+
+        const incorrectsElements = 
+            ItemsCantBeNotEmpty.some(item => item.classList.contains('incorrect'))
+
+        if(!incorrectsElements) {
+            const savedMusicsFromStorage = JSON.parse(localStorage.getItem('savedMusics'))
+            
+            const newArray = savedMusicsFromStorage.map(item => {
+                if(item.id === event.target.dataset.edit) {
+                    item.name = musicName.value
+                    item.artist = artistName.value
+                    item['release-date'] = releaseDate.value
+                    
+                }
+                return item
+            })
+
+            savedMusics = newArray
+
+            localStorage.setItem('savedMusics', JSON.stringify(newArray))
+
+            if(event.target.dataset.tempEdit) {
+                document.querySelector(`[data-temp-edit="${event.target.dataset.edit}"]`).classList.replace('fa-check', 'fa-pen')
+                document.querySelector(`[data-temp-div="${event.target.dataset.edit}"]`).remove()
+                
+                Array.from(ulWrapper.children).forEach(item => {
+                    item.remove()
+                })
+
+                showItemsOnScreen()
+
+            }
         }
     }
 })
