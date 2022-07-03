@@ -51,6 +51,11 @@ window.addEventListener('load', () => {
     savedMusics = JSON.parse(storageSavedMusics)
     search__music.focus()
     showItemsOnScreen()
+
+    setTimeout(() => {
+        document.querySelector('footer').classList.add('active-footer')
+    }, 1000)
+    
 })
 
 toggleHeight.addEventListener('click', () => ulWrapper.classList.toggle('active'))
@@ -172,7 +177,7 @@ ulWrapper.addEventListener('click', event => {
     
             liInsertIntoDOM.insertAdjacentElement('afterend', div)
             return
-            
+
         }        
     }
 

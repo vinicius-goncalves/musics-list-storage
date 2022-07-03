@@ -194,7 +194,6 @@ li::before {
 
 /*
     Style for edit section, when the user clicks to edit an item
-
 */
 .temp-edit-details {
     display: flex;
@@ -210,4 +209,21 @@ li::before {
 
 .options-dropdrown {
     display: flex;
+}
+
+footer {
+    position: absolute;
+    bottom: 15px;
+    color: #383838;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+footer.active-footer {
+    opacity: 1;
+}
+
+footer a {
+    color: #757575
 }
