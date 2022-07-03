@@ -305,16 +305,25 @@ randomCharactersButton.addEventListener('click', () => {
     releaseDate.value = generateId(4, '0123456789')
 })
 
-downloadFilesButton.addEventListener('click', () => {
+const currentDate = () => 
+    new Date().toLocaleDateString(navigator.language, { hour: 'numeric', minute: 'numeric'}).replace(/.+[,]\s/g, '')
+
+console.log(currentDate())
+
+const downloadFile = () => {
     const savedMusics = JSON.stringify(JSON.parse(localStorage.getItem('savedMusics')), null, 2)
-    blob = new Blob([savedMusics])
+    blobWithMusics = new Blob([savedMusics])
     
-    const a = document.createElement('a')
-    const url = URL.createObjectURL(blob)
+    const aElement = document.createElement('a')
+    const itemURL = URL.createObjectURL(blobWithMusics)
 
-    a.href = url
-    a.download = 'musics.json'
-    a.click()
-    a.remove()
+    aElement.href = itemURL
+    aElement.download = 'musics-'+generateId(4)+'-'+currentDate()+'.json'
+    aElement.type = 'application/json'
+    aElement.click()
+    aElement.remove()
+}
 
+downloadFilesButton.addEventListener('click', () => {
+    downloadFile()
 })

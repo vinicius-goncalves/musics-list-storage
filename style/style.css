@@ -31,6 +31,7 @@ body {
 
 .wrapper h4 {
     font-weight: 500;
+    margin-bottom: 10px;
 }
 
 .form-wrapper {
@@ -114,15 +115,16 @@ input[type="submit"] {
 }
 
 .options-dropdrown-buttons {
-    visibility: hidden;
     position: absolute;
+    pointer-events: none;
+    visibility: hidden;
 }
 
 .options-dropdrown-buttons.active {
     visibility: visible;
     background-color: #353535;
     width: 100%;
-    max-width: 250px;
+    max-width: 300px;
     top: 40px;
     right: -25px;
     border-radius: 7px;
@@ -130,6 +132,7 @@ input[type="submit"] {
     overflow: hidden;
     display: flex;
     justify-content: center;
+    pointer-events: auto;
     align-items: center;
     flex-direction: column;
 }
