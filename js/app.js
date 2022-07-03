@@ -12,6 +12,7 @@ const releaseDate = document.querySelector('#release__date')
 
 const searchTerm = document.querySelector('#search__music')
 const searchMusicButton = document.querySelector('#search__music__button')
+const downloadFilesButton = document.querySelector('#download__files')
 
 const randomCharactersButton = document.querySelector('#random__characters')
 
@@ -66,8 +67,8 @@ const showItemsOnScreen = () => {
 }
 
 window.onload = () => ulWrapper.classList.toggle('active')
+const storageSavedMusics = localStorage.getItem('savedMusics') === null ? [] : localStorage.getItem('savedMusics')
 window.addEventListener('load', () => {
-    const storageSavedMusics = localStorage.getItem('savedMusics') === null ? [] : localStorage.getItem('savedMusics')
     savedMusics = JSON.parse(storageSavedMusics)
     search__music.focus()
     showItemsOnScreen()
@@ -302,4 +303,18 @@ randomCharactersButton.addEventListener('click', () => {
     musicName.value = generateId(8)
     artistName.value = generateId(8)
     releaseDate.value = generateId(4, '0123456789')
+})
+
+downloadFilesButton.addEventListener('click', () => {
+    const savedMusics = JSON.stringify(JSON.parse(localStorage.getItem('savedMusics')), null, 2)
+    blob = new Blob([savedMusics])
+    
+    const a = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+
+    a.href = url
+    a.download = 'musics.json'
+    a.click()
+    a.remove()
+
 })
