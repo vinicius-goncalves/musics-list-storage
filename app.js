@@ -10,7 +10,10 @@ const musicName = document.querySelector('#music__name')
 const artistName = document.querySelector('#artist__name')
 const releaseDate = document.querySelector('#release__date')
 
+const searchTerm = document.querySelector('#search__music')
 const searchMusicButton = document.querySelector('#search__music__button')
+
+const randomCharactersButton = document.querySelector('#random__characters')
 
 const dropdownOptionsWrapper = document.querySelector('.options-dropdrown-button')
 
@@ -54,7 +57,7 @@ window.addEventListener('load', () => {
     const storageSavedMusics = localStorage.getItem('savedMusics') === null ? [] : localStorage.getItem('savedMusics')
     savedMusics = JSON.parse(storageSavedMusics)
     search__music.focus()
-    // showItemsOnScreen()
+    showItemsOnScreen()
 
     setTimeout(() => {
         document.querySelector('footer').classList.add('active-footer')
@@ -179,14 +182,15 @@ const editItem = (event) => {
     div.append(musicName, artistName, releaseDate)
 
     const dataTemps = [tempLiArtist, tempLiName, tempLiReleaseDate]
-    const itemsAreEmpty = dataTemps.every(item => !item) 
+    const itemsAreEmpty = dataTemps.every(item => !item)
+
+    const dataEdit = document.querySelector(`[data-edit="${editItemDataset}"]`)
 
     if(itemsAreEmpty) {
-        document.querySelector(`[data-edit="${editItemDataset}"]`).classList.replace('fa-pen', 'fa-check')
-        
-        document.querySelector(`[data-edit="${editItemDataset}"]`).setAttribute('data-temp-edit', editItemDataset)
-
+        dataEdit.classList.replace('fa-pen', 'fa-check')
+        dataEdit.setAttribute('data-temp-edit', editItemDataset)
         liInsertIntoDOM.insertAdjacentElement('afterend', div)
+
     }
 }
 
@@ -268,4 +272,22 @@ loadMusicsButton.addEventListener('click', () => {
 
     showItemsOnScreen()
 
+})
+
+searchTerm.addEventListener('input', () => {
+    const ulWrapperChildren = [...ulWrapperChildren]
+    ulWrapperChildren.forEach(item => {
+        const searchTermToLowerCase = searchTerm.value.toLowerCase()
+        if(!item.textContent.toLowerCase().includes(searchTermToLowerCase)) {
+            item.style.display = 'none'
+            return
+        }
+        item.style.display = 'block'
+    })
+})
+
+randomCharactersButton.addEventListener('click', () => {
+    musicName.value = generateId(8)
+    artistName.value = generateId(8)
+    releaseDate.value = generateId(4, '0123456789')
 })
