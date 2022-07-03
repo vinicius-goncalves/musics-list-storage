@@ -42,13 +42,26 @@ const loadMusicsButton = document.querySelector('#load__musics')
 const musicsId = []
 let savedMusics = []
 
+const createElement = (element, value, appendWhere, idGenerated) => {
+
+    const newElement = document.createElement(element)
+    newElement.textContent = value
+    newElement.dataset.li = idGenerated
+    appendWhere.appendChild(newElement)
+
+    newElement.innerHTML += 
+    `<i class="fas fa-trash" data-delete="${idGenerated}" style="cursor: pointer; float: right; margin-left: 10px;"></i>
+    <i class="fas fa-pen" data-edit="${idGenerated}" style="cursor: pointer; float: right;"></i>`
+    
+}
+
 const showItemsOnScreen = () => {
     savedMusics.forEach(music => {
         const { id, name, artist, 'release-date': releaseDate } = music
 
         const template = `${name} - ${artist} - ${releaseDate}`
         createElement('li', template, ulWrapper, id)
-
+        
     })
 }
 
@@ -77,18 +90,6 @@ const generateId = (length, chars = defaultChars) => {
     return result
 }
 
-const createElement = (element, value, appendWhere, idGenerated) => {
-
-    const newElement = document.createElement(element)
-    newElement.textContent = value
-    newElement.dataset.li = idGenerated
-    appendWhere.appendChild(newElement)
-
-    newElement.innerHTML += 
-    `<i class="fas fa-trash" data-delete="${idGenerated}" style="cursor: pointer; float: right; margin-left: 10px;"></i>
-    <i class="fas fa-pen" data-edit="${idGenerated}" style="cursor: pointer; float: right;"></i>`
-    
-}
 
 formWrapper.addEventListener('submit', event => {
 
@@ -274,16 +275,27 @@ loadMusicsButton.addEventListener('click', () => {
 
 })
 
+
 searchTerm.addEventListener('input', () => {
-    const ulWrapperChildren = [...ulWrapperChildren]
-    ulWrapperChildren.forEach(item => {
-        const searchTermToLowerCase = searchTerm.value.toLowerCase()
-        if(!item.textContent.toLowerCase().includes(searchTermToLowerCase)) {
-            item.style.display = 'none'
-            return
-        }
-        item.style.display = 'block'
-    })
+
+    const savedMusics = JSON.parse(localStorage.getItem('savedMusics'))
+    clearHTML(ulWrapper)
+
+    // filterItems.forEach(item => {
+    //     const template = `${item.name} - ${item.artist} - ${item['release-date']}`
+    //     createElement('li', template, ulWrapper, item.id)
+    // })
+
+    // filterItems.forEach(item => item.style.display = 'block')
+    // const ulWrapperChildren = [...ulWrapperChildren.children]
+    // ulWrapperChildren.forEach(item => {
+    //     const searchTermToLowerCase = searchTerm.value.toLowerCase()
+    //     if(!item.textContent.toLowerCase().includes(searchTermToLowerCase)) {
+    //         item.style.display = 'none'
+    //         return
+    //     }
+    //     item.style.display = 'block'
+    // })
 })
 
 randomCharactersButton.addEventListener('click', () => {
