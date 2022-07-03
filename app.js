@@ -21,6 +21,11 @@ dropdrownButtonsChildren.forEach(item => {
     })
 })
 
+const clearHTML = (container) => {
+    const containerChildren = [...container.children]
+    containerChildren.forEach(item => item.remove())
+}
+
 dropdownOptionsWrapper.addEventListener('click', () => {
     document.querySelector('.options-dropdrown-buttons').classList.toggle('active')
 })
@@ -35,7 +40,6 @@ const musicsId = []
 let savedMusics = []
 
 const showItemsOnScreen = () => {
-    console.log(savedMusics)
     savedMusics.forEach(music => {
         const { id, name, artist, 'release-date': releaseDate } = music
 
@@ -50,7 +54,7 @@ window.addEventListener('load', () => {
     const storageSavedMusics = localStorage.getItem('savedMusics') === null ? [] : localStorage.getItem('savedMusics')
     savedMusics = JSON.parse(storageSavedMusics)
     search__music.focus()
-    showItemsOnScreen()
+    // showItemsOnScreen()
 
     setTimeout(() => {
         document.querySelector('footer').classList.add('active-footer')
@@ -108,136 +112,158 @@ formWrapper.addEventListener('submit', event => {
     createElement('li', template, ulWrapper, idGenerated)
 })
 
-ulWrapper.addEventListener('click', event => {
-
-    const targetClicked = event.target
-
-    if(targetClicked.dataset.delete) {
-
-        ulWrapper.innerHTML = ''
-
-        savedMusics.filter(item => {
-            if(item.id === event.target.dataset.delete) {
-                return savedMusics.splice(item.id, 1)
-            }
-        })
-
-        localStorage.setItem('savedMusics', JSON.stringify(savedMusics))
-        showItemsOnScreen()
-
-        if(ulWrapper.firstElementChild === null) {
-            const newElement = document.createElement('p')
-            newElement.textContent = "Nothing yet"
-            newElement.classList.add('musics-not-found')
-            ulWrapper.appendChild(newElement)
-        }
-    }
-
-    if(event.target.dataset.edit) {
-
-        const liInsertIntoDOM = document.querySelector(`[data-li="${event.target.dataset.edit}"]`)
-        const musicNameIntoDOM = liInsertIntoDOM.textContent.match(/[^\-]+/gi)[0]
-        const artistNameIntoDOM = liInsertIntoDOM.textContent.match(/[^\-]+/gi)[1]
-        const releaseDateIntoDOM = liInsertIntoDOM.textContent.match(/[^\-]+/gi)[2]
-
-        const tempLiArtist = document.querySelector(`[data-temp-li-artist="${event.target.dataset.edit}"]`)
-        const tempLiName = document.querySelector(`[data-temp-li-name="${event.target.dataset.edit}"]`)
-        const tempLiReleaseDate = document.querySelector(`[data-temp-li-date="${event.target.dataset.edit}"]`)
-
-        const div = document.createElement('div')
-        div.classList.add('temp-edit-details')
-        div.dataset.tempDiv = event.target.dataset.edit
-
-        const musicName = document.createElement('input')
-        musicName.setAttribute('type', 'text')
-        console.log()
-        musicName.placeholder = musicNameIntoDOM
-        musicName.classList.add('input-style', 'input-temp-edit-details')
-        musicName.dataset.tempLiName = event.target.dataset.edit
-
-        const artistName = document.createElement('input') 
-        artistName.placeholder = artistNameIntoDOM
-        artistName.dataset.tempLiArtist = event.target.dataset.edit
-        artistName.classList.add('input-style', 'input-temp-edit-details')
-
-        const releaseDate = document.createElement('input')
-        releaseDate.placeholder = releaseDateIntoDOM
-        releaseDate.dataset.tempLiDate = event.target.dataset.edit
-        releaseDate.classList.add('input-style', 'input-temp-edit-details')
-
-        div.append(musicName, artistName, releaseDate)
-
-        const dataTemps = [tempLiArtist, tempLiName, tempLiReleaseDate]
-        const itemsAreEmpty = dataTemps.every(item => !item) 
-
-        if(itemsAreEmpty) {
-            document.querySelector(`[data-edit="${event.target.dataset.edit}"]`).classList.replace('fa-pen', 'fa-check')
-            
-            document.querySelector(`[data-edit="${event.target.dataset.edit}"]`).setAttribute('data-temp-edit', event.target.dataset.edit)
+const deleteItem = event => {
     
-            liInsertIntoDOM.insertAdjacentElement('afterend', div)
-            return
+    const eventTargetDataset = event.target.dataset
+    const { ['delete']: deleteItemDataset } = eventTargetDataset
 
-        }        
+    clearHTML(ulWrapper)
+
+    savedMusics.filter((item, index) => {
+        if(item.id === deleteItemDataset) {
+            return savedMusics.splice(index, 1)
+        }
+    })
+
+    localStorage.setItem('savedMusics', JSON.stringify(savedMusics))
+    showItemsOnScreen()
+
+    if(ulWrapper.firstElementChild === null) {
+        const newElement = document.createElement('p')
+        newElement.textContent = "Nothing yet"
+        newElement.classList.add('musics-not-found')
+        ulWrapper.appendChild(newElement)
     }
+}
 
-    if(event.target.dataset.tempEdit) {
+const editItem = (event) => {
+    
+    const eventTargetDataset = event.target.dataset
+    const { ['edit']: editItemDataset } = eventTargetDataset
 
-        document.querySelector(`[data-temp-div="${event.target.dataset.edit}"]`).classList.add('temp-edit-details-active')
+    const liInsertIntoDOM = document.querySelector(`[data-li="${editItemDataset}"]`)
 
-        const musicName = document.querySelector(`[data-temp-li-name="${event.target.dataset.edit}"]`)
-        const artistName  = document.querySelector(`[data-temp-li-artist="${event.target.dataset.edit}"]`)
-        const releaseDate = document.querySelector(`[data-temp-li-date="${event.target.dataset.edit}"]`)
+    const getMusicDetailsMatch = element => index => element.textContent.match(/[^\-]+/gi)[index]
+    const musicNameIntoDOM = getMusicDetailsMatch(liInsertIntoDOM)(0)
+    const artistNameIntoDOM = getMusicDetailsMatch(liInsertIntoDOM)(1)
+    const releaseDateIntoDOM = getMusicDetailsMatch(liInsertIntoDOM)(2)
 
-        const arrayWithDetails = [musicName, artistName, releaseDate]
+    const tempLiArtist = document.querySelector(`[data-temp-li-artist="${editItemDataset}"]`)
+    const tempLiName = document.querySelector(`[data-temp-li-name="${editItemDataset}"]`)
+    const tempLiReleaseDate = document.querySelector(`[data-temp-li-date="${editItemDataset}"]`)
 
-        const ItemsCantBeNotEmpty = arrayWithDetails.map(item => {
-            if(item.value === '') {
-                item.classList.add('incorrect')
-            }else {
-                item.classList.remove('incorrect')
+    const div = document.createElement('div')
+    div.classList.add('temp-edit-details')
+    div.dataset.tempDiv = editItemDataset
+
+    const musicName = document.createElement('input')
+    musicName.setAttribute('type', 'text')
+    console.log()
+    musicName.placeholder = musicNameIntoDOM
+    musicName.classList.add('input-style', 'input-temp-edit-details')
+    musicName.dataset.tempLiName = editItemDataset
+    musicName.value = generateId(8)
+
+    const artistName = document.createElement('input') 
+    artistName.placeholder = artistNameIntoDOM
+    artistName.dataset.tempLiArtist = editItemDataset
+    artistName.classList.add('input-style', 'input-temp-edit-details')
+    artistName.value = generateId(8)
+
+    const releaseDate = document.createElement('input')
+    releaseDate.placeholder = releaseDateIntoDOM
+    releaseDate.dataset.tempLiDate = editItemDataset
+    releaseDate.classList.add('input-style', 'input-temp-edit-details')
+    releaseDate.value = generateId(8)
+
+    div.append(musicName, artistName, releaseDate)
+
+    const dataTemps = [tempLiArtist, tempLiName, tempLiReleaseDate]
+    const itemsAreEmpty = dataTemps.every(item => !item) 
+
+    if(itemsAreEmpty) {
+        document.querySelector(`[data-edit="${editItemDataset}"]`).classList.replace('fa-pen', 'fa-check')
+        
+        document.querySelector(`[data-edit="${editItemDataset}"]`).setAttribute('data-temp-edit', editItemDataset)
+
+        liInsertIntoDOM.insertAdjacentElement('afterend', div)
+    }
+}
+
+const editTempItem = event => {
+
+    const eventTargetDataset = event.target.dataset
+
+    const { 
+        ['edit']: editItemDataset, 
+        ['tempEdit']: tempEditDataset } = eventTargetDataset
+
+    document.querySelector(`[data-temp-div="${editItemDataset}"]`).classList.add('temp-edit-details-active')
+    
+    const musicName = document.querySelector(`[data-temp-li-name="${editItemDataset}"]`)
+    const artistName  = document.querySelector(`[data-temp-li-artist="${editItemDataset}"]`)
+    const releaseDate = document.querySelector(`[data-temp-li-date="${editItemDataset}"]`)
+
+    const arrayWithDetails = [musicName, artistName, releaseDate]
+
+    const ItemsCantBeNotEmpty = arrayWithDetails.map(item => {
+        if(item.value === '') {
+            item.classList.add('incorrect')
+        }else {
+            item.classList.remove('incorrect')
+        }
+        return item
+    })
+
+    const incorrectsElements = 
+        ItemsCantBeNotEmpty.some(item => item.classList.contains('incorrect'))
+
+    if(!incorrectsElements) {
+        const savedMusicsFromStorage = JSON.parse(localStorage.getItem('savedMusics'))
+        
+        const newArray = savedMusicsFromStorage.map(item => {
+            if(item.id === editItemDataset) {
+                item.name = musicName.value
+                item.artist = artistName.value
+                item['release-date'] = releaseDate.value
+                
             }
             return item
         })
 
-        const incorrectsElements = 
-            ItemsCantBeNotEmpty.some(item => item.classList.contains('incorrect'))
+        savedMusics = newArray
 
-        if(!incorrectsElements) {
-            const savedMusicsFromStorage = JSON.parse(localStorage.getItem('savedMusics'))
-            
-            const newArray = savedMusicsFromStorage.map(item => {
-                if(item.id === event.target.dataset.edit) {
-                    item.name = musicName.value
-                    item.artist = artistName.value
-                    item['release-date'] = releaseDate.value
-                    
-                }
-                return item
-            })
+        localStorage.setItem('savedMusics', JSON.stringify(newArray))
 
-            savedMusics = newArray
+        if(tempEditDataset) {
+            document.querySelector(`[data-temp-edit="${editItemDataset}"]`).classList.replace('fa-check', 'fa-pen')
+            document.querySelector(`[data-temp-div="${editItemDataset}"]`).remove()
+            clearHTML(ulWrapper)
 
-            localStorage.setItem('savedMusics', JSON.stringify(newArray))
+            showItemsOnScreen()
 
-            if(event.target.dataset.tempEdit) {
-                document.querySelector(`[data-temp-edit="${event.target.dataset.edit}"]`).classList.replace('fa-check', 'fa-pen')
-                document.querySelector(`[data-temp-div="${event.target.dataset.edit}"]`).remove()
-                
-                Array.from(ulWrapper.children).forEach(item => {
-                    item.remove()
-                })
-
-                showItemsOnScreen()
-
-            }
         }
     }
+}
+
+ulWrapper.addEventListener('click', event => {
+    
+    const targetClicked = event.target
+
+    if(targetClicked.dataset.delete) {
+        deleteItem(event)
+    }
+
+    if(event.target.dataset.edit && !event.target.dataset.tempEdit) {
+        editItem(event)
+    }else if (event.target.dataset.tempEdit) {
+        editTempItem(event)
+    }  
 })
 
 loadMusicsButton.addEventListener('click', () => {
     if(savedMusics.length !== 0) {
-        ulWrapper.innerHTML = ''
+        clearHTML(ulWrapper)
     }
 
     showItemsOnScreen()
