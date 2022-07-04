@@ -281,7 +281,7 @@ const includesTerm = (searchTerm, ...items) => {
 }
 
 searchTerm.addEventListener('input', () => {
-    debugger
+
     const savedMusicsFromStorage = JSON.parse(localStorage.getItem('savedMusics'))
     clearHTML(ulWrapper)
 
