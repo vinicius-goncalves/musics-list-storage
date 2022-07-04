@@ -23,8 +23,6 @@ const dropdownButtons = document.querySelector('.options-dropdrown-buttons')
 
 let savedMusics = getMusicsIntoLocalStorage === null ? [] : JSON.parse(localStorage.getItem('savedMusics'))
 
-console.log(savedMusics)
-
 window.addEventListener('load', () => {
     ulWrapper.classList.add('active')
     // showItemsOnScreen()
@@ -260,8 +258,6 @@ ulWrapper.addEventListener('click', event => {
 
     const valuesFromTargetDatasetClicked = Object.keys(targetDatasetClicked).toString()
 
-    console.log(targetDatasetClicked)
-
     switch(valuesFromTargetDatasetClicked) {
         case 'edit':
             editItem(event)
@@ -273,13 +269,6 @@ ulWrapper.addEventListener('click', event => {
             deleteItem(event)
             break
     }
-
-    // if(targetClicked.dataset.delete) {
-    // }
-    
-    // if(event.target.dataset.edit && !event.target.dataset.tempEdit) {
-    // }else if (event.target.dataset.tempEdit) {
-    // }  
 })
 
 const includesTerm = (searchTerm, ...items) => { 
