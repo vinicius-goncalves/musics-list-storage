@@ -276,27 +276,17 @@ loadMusicsButton.addEventListener('click', () => {
 
 })
 
-
 searchTerm.addEventListener('input', () => {
 
-    const savedMusics = JSON.parse(localStorage.getItem('savedMusics'))
-    clearHTML(ulWrapper)
-
-    // filterItems.forEach(item => {
-    //     const template = `${item.name} - ${item.artist} - ${item['release-date']}`
-    //     createElement('li', template, ulWrapper, item.id)
-    // })
-
-    // filterItems.forEach(item => item.style.display = 'block')
-    // const ulWrapperChildren = [...ulWrapperChildren.children]
-    // ulWrapperChildren.forEach(item => {
-    //     const searchTermToLowerCase = searchTerm.value.toLowerCase()
-    //     if(!item.textContent.toLowerCase().includes(searchTermToLowerCase)) {
-    //         item.style.display = 'none'
-    //         return
-    //     }
-    //     item.style.display = 'block'
-    // })
+    const ulWrapperChildren = [...ulWrapper.children]
+    ulWrapperChildren.forEach(item => {
+        const searchTermToLowerCase = searchTerm.value.toLowerCase()
+        if(!item.textContent.toLowerCase().includes(searchTermToLowerCase)) {
+            item.style.display = 'none'
+            return
+        }
+        item.style.display = 'block'
+    })
 })
 
 randomCharactersButton.addEventListener('click', () => {
@@ -306,9 +296,9 @@ randomCharactersButton.addEventListener('click', () => {
 })
 
 const currentDate = () => 
-    new Date().toLocaleDateString(navigator.language, { hour: 'numeric', minute: 'numeric'}).replace(/.+[,]\s/g, '')
-
-console.log(currentDate())
+    new Date()
+    .toLocaleDateString(navigator.language, { hour: 'numeric', minute: 'numeric'})
+    .replace(/.+[,]\s/g, '')
 
 const downloadFile = () => {
     const savedMusics = JSON.stringify(JSON.parse(localStorage.getItem('savedMusics')), null, 2)
