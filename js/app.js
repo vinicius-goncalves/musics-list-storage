@@ -276,17 +276,22 @@ loadMusicsButton.addEventListener('click', () => {
 
 })
 
-searchTerm.addEventListener('input', () => {
+const includesTerm = (searchTerm, ...items) => { 
+    return items.some(item => item.includes(searchTerm))
+}
 
-    const ulWrapperChildren = [...ulWrapper.children]
-    ulWrapperChildren.forEach(item => {
-        const searchTermToLowerCase = searchTerm.value.toLowerCase()
-        if(!item.textContent.toLowerCase().includes(searchTermToLowerCase)) {
-            item.style.display = 'none'
-            return
+searchTerm.addEventListener('input', () => {
+    debugger
+    const savedMusicsFromStorage = JSON.parse(localStorage.getItem('savedMusics'))
+    clearHTML(ulWrapper)
+
+    savedMusicsFromStorage.map(item => { 
+        if(includesTerm(searchTerm.value, item.name, item.artist, item['release-date'])) {
+            const template = `${item.name} - ${item.artist} - ${item['release-date']}`
+            createElement('li', template, ulWrapper, item.id)
+            
         }
-        item.style.display = 'block'
-    })
+    })  
 })
 
 randomCharactersButton.addEventListener('click', () => {
