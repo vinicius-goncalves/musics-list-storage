@@ -235,7 +235,6 @@ const editItem = (event) => {
 
     const musicName = document.createElement('input')
     musicName.setAttribute('type', 'text')
-    console.log()
     musicName.placeholder = musicNameIntoDOM
     musicName.classList.add('input-style', 'input-temp-edit-details')
     musicName.dataset.tempLiName = editItemDataset

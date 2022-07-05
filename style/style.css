@@ -236,3 +236,13 @@ footer.active-footer {
 footer a {
     color: #757575
 }
+
+.ul-wrapper::-webkit-scrollbar {
+    background-color: #383838;
+    width: 5px;
+}
+
+.ul-wrapper::-webkit-scrollbar-thumb {
+    background-color: #fcff34;
+    border-radius: 10px;
+}
