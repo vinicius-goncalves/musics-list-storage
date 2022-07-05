@@ -14,4 +14,4 @@ O site é muito intuitivo, não há mudo segredo em utilizar. Você pode testar 
 
 - https://vinicius-goncalves.github.io/musics-list-storage/
 
-> Projeto sob licença [GPL v3.0](LICENSE). Hospedado pelo [GitHub Pages](https://pages.github.com/).
+> Projeto sob licença [GPL v3.0](LICENSE). Hospedado pelo [GitHub Pages](https://github.com/vinicius-goncalves/musics-list-storage/deployments/activity_log?environment=github-pages).
