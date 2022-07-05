@@ -1,65 +1,118 @@
+import { removeClass } from './utils.js'
+
 const defaultChars = 
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
-const wrapper = document.querySelector('.wrapper')
 const formWrapper = document.querySelector('[data-js="form"]')
 const ulWrapper = document.querySelector('.ul-wrapper')
-const toggleHeight = document.querySelector('.toggleHeight') 
+const searchWrapper = document.querySelector('.search-wrapper')
 
 const musicName = document.querySelector('#music__name')
 const artistName = document.querySelector('#artist__name')
 const releaseDate = document.querySelector('#release__date')
 
 const searchTerm = document.querySelector('#search__music')
-const searchMusicButton = document.querySelector('#search__music__button')
-const downloadFilesButton = document.querySelector('#download__files')
-
-const getMusicsIntoLocalStorage = localStorage.getItem('savedMusics')
 
 const randomCharactersButton = document.querySelector('#random__characters')
 
-const dropdownOptionsWrapper = document.querySelector('.options-dropdrown-button')
-const dropdownButtons = document.querySelector('.options-dropdrown-buttons')
+const dropdownOptionsWrapper = document.querySelector('.options-dropdown-button')
+const dropdownButtons = document.querySelector('.options-dropdown-buttons')
 
-let savedMusics = getMusicsIntoLocalStorage === null ? [] : JSON.parse(localStorage.getItem('savedMusics'))
-
-window.addEventListener('load', () => {
-    ulWrapper.classList.add('active')
-    // showItemsOnScreen()
-
-    setTimeout(() => {
-        document.querySelector('footer').classList.add('active-footer')
-    }, 1000)
-})
-
-const dropdrownButtonsChildren = [...document.querySelector('.options-dropdrown-buttons').children]
-dropdrownButtonsChildren.forEach(item => {
-    item.addEventListener('click', () => {
-        document.querySelector('.options-dropdrown-buttons').classList.remove('active')
-    })
-})
+let savedMusics = localStorage.getItem('savedMusics') === null ? [] : JSON.parse(localStorage.getItem('savedMusics'))
 
 const clearHTML = (container) => {
     const containerChildren = [...container.children]
     containerChildren.forEach(item => item.remove())
 }
 
+window.addEventListener('load', () => {
+    ulWrapper.classList.toggle('show-musics-added')
+    showItemsOnScreen()
+
+    setTimeout(() => {
+        document.querySelector('footer').classList.add('active-footer')
+    }, 1000)
+})
+
+const dropdownButtonsChildren = [...dropdownButtons.children]
+
+dropdownButtonsChildren.forEach(item => {
+    item.addEventListener('click', () => {
+        removeClass('.options-dropdown-buttons', 'active')
+        removeClass('.temp-wrapper', 'active-temp-wrapper')
+
+    })
+})
+
+const extractProperties = (obj) => {
+    const objExtract = Object.entries(obj)
+    const finalResult = objExtract.reduce((acc, item) => {
+        const [ property, value ] = item
+        acc += `${property}: ${value}; `
+        return acc
+    }, '')
+    
+    return finalResult
+}
+
+
+dropdownOptionsWrapper.addEventListener('click', event => {
+    const { clientX, clientY } = event
+    document.querySelector('.temp-wrapper').classList.add('active-temp-wrapper')
+    dropdownButtons.setAttribute(
+        'style', 
+        extractProperties({ 
+            left: `${clientX}px`, 
+            top: `${clientY}px`}))
+
+    dropdownButtons.classList.toggle('active')
+})
+
+document.querySelector('.temp-wrapper').addEventListener('click', () => {
+    removeClass('.options-dropdown-buttons', 'active')
+    removeClass('.temp-wrapper', 'active-temp-wrapper')
+})
+
+
+const currentDate = () => 
+    new Date()
+    .toLocaleDateString(navigator.language, { hour: 'numeric', minute: 'numeric'})
+    .replace(/.+[,]\s/g, '')
+
+const downloadFile = () => {
+    const savedMusics = JSON.stringify(JSON.parse(localStorage.getItem('savedMusics')), null, 2)
+    blobWithMusics = new Blob([savedMusics])
+    
+    const aElement = document.createElement('a')
+    const itemURL = URL.createObjectURL(blobWithMusics)
+
+    aElement.href = itemURL
+    aElement.download = `musics-${generateId(4)}-${currentDate()}.json`
+    aElement.type = 'application/json'
+    aElement.click()
+    aElement.remove()
+}
+
 dropdownButtons.addEventListener('click', event => {
-    if(event.target === load__musics) {
-        clearHTML(ulWrapper)
-        showItemsOnScreen()
+
+    const targetIdClicked = event.target.id
+    
+    switch(targetIdClicked) {
+        case 'load__musics':
+            clearHTML(ulWrapper)
+            showItemsOnScreen()
+            break
+        case 'show__musics__added':
+            ulWrapper.classList.toggle('show-musics-added')
+            break
+        case 'search__music__button':
+            searchWrapper.classList.toggle('show-search-wrapper')
+            break
+        case 'download__files':
+            downloadFile()
+            break   
     }
 })
-
-dropdownOptionsWrapper.addEventListener('click', () => {
-    document.querySelector('.options-dropdrown-buttons').classList.toggle('active')
-})
-
-searchMusicButton.addEventListener('click', () => {
-    document.querySelector('.search-wrapper').classList.toggle('active-search-wrapper')
-})
-
-const loadMusicsButton = document.querySelector('#load__musics')
 
 const createElement = (element, value, appendWhere, idGenerated) => {
 
@@ -77,7 +130,7 @@ const createElement = (element, value, appendWhere, idGenerated) => {
 const showItemsOnScreen = () => {
 
     savedMusics.forEach(music => {
-        const { id, name, artist, 'release-date': releaseDate } = music
+        const { id, name, artist, ['release-date']: releaseDate } = music
 
         const template = `${name} - ${artist} - ${releaseDate}`
         createElement('li', template, ulWrapper, id)
@@ -130,6 +183,7 @@ const deleteItem = event => {
     })
 
     localStorage.setItem('savedMusics', JSON.stringify(savedMusics))
+
     showItemsOnScreen()
 
     if(ulWrapper.firstElementChild === null) {
@@ -223,10 +277,9 @@ const editTempItem = event => {
         itemsCantBeNotEmpty.some(item => item.classList.contains('incorrect'))
 
     if(!incorrectsElements) {
-        const savedMusicsFromStorage = JSON.parse(getMusicsIntoLocalStorage)
+        const savedMusicsFromStorage = JSON.parse(localStorage.getItem('savedMusics'))
         
         const newArray = savedMusicsFromStorage.map(item => {
-
             if(item.id === tempEditDataset) {
                 item.name = musicNameFromDOM.value
                 item.artist = artistNameFromDOM.value
@@ -238,7 +291,7 @@ const editTempItem = event => {
         savedMusics.splice(0, savedMusics.length)
         savedMusics.push(...newArray)
 
-        localStorage.setItem('savedMusics', JSON.stringify(newArray))
+        localStorage.setItem('savedMusics', JSON.stringify(savedMusics))
 
         if(tempEditDataset) {
             document.querySelector(`[data-temp-edit="${tempEditDataset}"]`).classList.replace('fa-check', 'fa-pen')
@@ -277,11 +330,14 @@ const includesTerm = (searchTerm, ...items) => {
 
 searchTerm.addEventListener('input', () => {
  
-    const savedMusicsFromStorage = JSON.parse(getMusicsIntoLocalStorage)
+    const savedMusicsFromStorage = JSON.parse(localStorage.getItem('savedMusics'))
     clearHTML(ulWrapper)
 
     savedMusicsFromStorage.map(item => { 
-        if(includesTerm(searchTerm.value, item.name, item.artist, item['release-date'])) {
+
+        console.log(item)
+
+        if(includesTerm(searchTerm.value.toLowerCase(), item.name.toLowerCase(), item.artist.toLowerCase(), item['release-date'])) {
             const template = `${item.name} - ${item.artist} - ${item['release-date']}`
             createElement('li', template, ulWrapper, item.id)
             
@@ -293,27 +349,4 @@ randomCharactersButton.addEventListener('click', () => {
     musicName.value = generateId(8)
     artistName.value = generateId(8)
     releaseDate.value = generateId(4, '0123456789')
-})
-
-const currentDate = () => 
-    new Date()
-    .toLocaleDateString(navigator.language, { hour: 'numeric', minute: 'numeric'})
-    .replace(/.+[,]\s/g, '')
-
-const downloadFile = () => {
-    const savedMusics = JSON.stringify(JSON.parse(getMusicsIntoLocalStorage), null, 2)
-    blobWithMusics = new Blob([savedMusics])
-    
-    const aElement = document.createElement('a')
-    const itemURL = URL.createObjectURL(blobWithMusics)
-
-    aElement.href = itemURL
-    aElement.download = 'musics-'+generateId(4)+'-'+currentDate()+'.json'
-    aElement.type = 'application/json'
-    aElement.click()
-    aElement.remove()
-}
-
-downloadFilesButton.addEventListener('click', () => {
-    downloadFile()
 })

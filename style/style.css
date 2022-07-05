@@ -67,7 +67,7 @@ body {
     align-items: center;
 }
 
-.search-wrapper.active-search-wrapper {
+.search-wrapper.show-search-wrapper {
     opacity: 1;
     width: 100%;
     height: 100%;
@@ -108,25 +108,36 @@ input[type="submit"] {
     flex-direction: column;
 }
 
-.options-dropdrown {
+.temp-wrapper {
+    display: none;
+}
+
+.temp-wrapper.active-temp-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-width: 100vw;
+    min-height: 100vh;
+    display: block;
+}
+
+.options-dropdown {
     display: flex;
     flex-direction: column;
-    position: relative;
+    position: relative !important;
 }
 
-.options-dropdrown-buttons {
-    position: absolute;
+.options-dropdown-buttons {
     pointer-events: none;
     visibility: hidden;
+    background-color: red;
 }
 
-.options-dropdrown-buttons.active {
+.options-dropdown-buttons.active {
     visibility: visible;
     background-color: #353535;
     width: 100%;
     max-width: 300px;
-    top: 40px;
-    right: -25px;
     border-radius: 7px;
     text-align: center;
     overflow: hidden;
@@ -135,6 +146,8 @@ input[type="submit"] {
     pointer-events: auto;
     align-items: center;
     flex-direction: column;
+    position: absolute;
+    z-index: 1;
 }
 
 .button-style {
@@ -167,7 +180,7 @@ ul {
     overflow: hidden;
 }
 
-ul.active {
+ul.show-musics-added {
     padding: 50px;
     max-height: 250px;
     overflow: hidden auto;
@@ -188,13 +201,6 @@ li::before {
     font-weight: bold;
 }
 
-:required::before {
-    content: "*";
-    background-color: red;
-    width: 100%;
-    height: 100%;
-}
-
 /*
     Style for edit section, when the user clicks to edit an item
 */
@@ -210,7 +216,7 @@ li::before {
     border: 1px solid red;
 }
 
-.options-dropdrown {
+.options-dropdown {
     display: flex;
 }
 
