@@ -25,9 +25,27 @@ const clearHTML = (container) => {
     containerChildren.forEach(item => item.remove())
 }
 
+const musicsNotFoundInformation = () => {
+    if (ulWrapper.firstElementChild === null) {
+        const pElement = document.createElement('p')
+        pElement.textContent = "No musics found"
+        pElement.classList.add('musics-not-found')
+        ulWrapper.append(pElement)
+    }
+}
+
 window.addEventListener('load', () => {
-    ulWrapper.classList.toggle('show-musics-added')
-    showItemsOnScreen()
+    
+    if(!ulWrapper.classList.contains('show-musics-added') 
+        && JSON.parse(localStorage.getItem('savedMusics')).length === 0) {
+        ulWrapper.classList.add('show-musics-added')
+        musicsNotFoundInformation()
+    }else {
+        ulWrapper.classList.add('show-musics-added')
+        showMusicsOnScreen()
+    }
+
+
 
     setTimeout(() => {
         document.querySelector('footer').classList.add('active-footer')
@@ -93,6 +111,21 @@ const downloadFile = () => {
     aElement.remove()
 }
 
+const showMusicsOnScreen = () => {
+
+    if(document.querySelector('.musics-not-found') !== null) {
+        document.querySelector('.musics-not-found').remove()
+    }
+
+    savedMusics.forEach(music => {
+        const { id, name, artist, ['release-date']: releaseDate } = music
+
+        const template = `${name} - ${artist} - ${releaseDate}`
+        createElement('li', template, ulWrapper, id)
+        
+    })
+}
+
 dropdownButtons.addEventListener('click', event => {
 
     const targetIdClicked = event.target.id
@@ -100,7 +133,7 @@ dropdownButtons.addEventListener('click', event => {
     switch(targetIdClicked) {
         case 'load__musics':
             clearHTML(ulWrapper)
-            showItemsOnScreen()
+            showMusicsOnScreen()
             break
         case 'show__musics__added':
             ulWrapper.classList.toggle('show-musics-added')
@@ -125,17 +158,6 @@ const createElement = (element, value, appendWhere, idGenerated) => {
     `<i class="fas fa-trash" data-delete="${idGenerated}" style="cursor: pointer; float: right; margin-left: 10px;"></i>
     <i class="fas fa-pen" data-edit="${idGenerated}" style="cursor: pointer; float: right;"></i>`
     
-}
-
-const showItemsOnScreen = () => {
-
-    savedMusics.forEach(music => {
-        const { id, name, artist, ['release-date']: releaseDate } = music
-
-        const template = `${name} - ${artist} - ${releaseDate}`
-        createElement('li', template, ulWrapper, id)
-        
-    })
 }
 
 const generateId = (length, chars = defaultChars) => {
@@ -165,8 +187,11 @@ formWrapper.addEventListener('submit', event => {
     localStorage.setItem('savedMusics', JSON.stringify(savedMusics))
 
     clearHTML(ulWrapper)
-    showItemsOnScreen()
+    showMusicsOnScreen()
 
+    if(!ulWrapper.classList.contains('show-musics-added')) {
+        ulWrapper.classList.add('show-musics-added')
+    }
 })
 
 const deleteItem = event => {
@@ -184,14 +209,8 @@ const deleteItem = event => {
 
     localStorage.setItem('savedMusics', JSON.stringify(savedMusics))
 
-    showItemsOnScreen()
-
-    if(ulWrapper.firstElementChild === null) {
-        const newElement = document.createElement('p')
-        newElement.textContent = "Nothing yet"
-        newElement.classList.add('musics-not-found')
-        ulWrapper.appendChild(newElement)
-    }
+    showMusicsOnScreen()
+    musicsNotFoundInformation()
 }
 
 const editItem = (event) => {
@@ -298,7 +317,7 @@ const editTempItem = event => {
             document.querySelector(`[data-temp-div="${tempEditDataset}"]`).remove()
             clearHTML(ulWrapper)
 
-            showItemsOnScreen()
+            showMusicsOnScreen()
 
         }
     }
@@ -335,11 +354,15 @@ searchTerm.addEventListener('input', () => {
 
     savedMusicsFromStorage.map(item => { 
 
-        console.log(item)
+        const { id, name, artist, ['release-date']: releaseDate } = item
 
-        if(includesTerm(searchTerm.value.toLowerCase(), item.name.toLowerCase(), item.artist.toLowerCase(), item['release-date'])) {
-            const template = `${item.name} - ${item.artist} - ${item['release-date']}`
-            createElement('li', template, ulWrapper, item.id)
+        const searchTermLowerCaseValue = searchTerm.value.toLowerCase()
+        const nameLowerCase = name.toLowerCase()
+        const artistLowerCase = artist.toLowerCase()
+
+        if(includesTerm(searchTermLowerCaseValue, nameLowerCase, artistLowerCase, releaseDate)) {
+            const template = `${name} - ${artist} - ${item['release-date']}`
+            createElement('li', template, ulWrapper, id)
             
         }
     })  
