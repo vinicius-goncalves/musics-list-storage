@@ -113,8 +113,8 @@ const downloadFile = () => {
 
 const showMusicsOnScreen = () => {
 
-    if(document.querySelector('.musics-not-found') !== null) {
-        document.querySelector('.musics-not-found').remove()
+    if(JSON.parse(localStorage.getItem('savedMusics')).lenght !== 0) {
+        clearHTML(ulWrapper)
     }
 
     savedMusics.forEach(music => {
@@ -132,7 +132,6 @@ dropdownButtons.addEventListener('click', event => {
     
     switch(targetIdClicked) {
         case 'load__musics':
-            clearHTML(ulWrapper)
             showMusicsOnScreen()
             break
         case 'show__musics__added':
