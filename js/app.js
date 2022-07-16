@@ -232,6 +232,7 @@ const editItem = (event) => {
     div.classList.add('temp-edit-details')
     div.dataset.tempDiv = editItemDataset
 
+    
     const musicName = document.createElement('input')
     musicName.setAttribute('type', 'text')
     musicName.placeholder = musicNameIntoDOM
@@ -244,7 +245,7 @@ const editItem = (event) => {
     artistName.dataset.tempLiArtist = editItemDataset
     artistName.classList.add('input-style', 'input-temp-edit-details')
     artistName.value = generateId(8)
-
+        
     const releaseDate = document.createElement('input')
     releaseDate.placeholder = releaseDateIntoDOM
     releaseDate.dataset.tempLiDate = editItemDataset
@@ -253,18 +254,13 @@ const editItem = (event) => {
 
     div.append(musicName, artistName, releaseDate)
 
-    const dataTemps = [tempLiArtist, tempLiName, tempLiReleaseDate]
-    const itemsAreEmpty = dataTemps.every(item => !item)
-
     const dataEdit = document.querySelector(`[data-edit="${editItemDataset}"]`)
 
-    if(itemsAreEmpty) {
-        dataEdit.classList.replace('fa-pen', 'fa-check')
-        dataEdit.setAttribute('data-temp-edit', editItemDataset)
-        dataEdit.removeAttribute('data-edit', editItemDataset)
-        liInsertIntoDOM.insertAdjacentElement('afterend', div)
+    dataEdit.classList.replace('fa-pen', 'fa-check')
+    dataEdit.setAttribute('data-temp-edit', editItemDataset)
+    dataEdit.removeAttribute('data-edit', editItemDataset)
+    liInsertIntoDOM.insertAdjacentElement('afterend', div)
 
-    }
 }
 
 const editTempItem = event => {
